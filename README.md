@@ -107,74 +107,74 @@ This lab shows how to configure an MPLS L3VPN with:
 
 ### SP — Common OSPF (Backbone)
 ```bash
-router ospf 1
- network 172.16.0.0 0.0.255.255 area 0
+SP1-PE# router ospf 1
+         network 172.16.0.0 0.0.255.255 area 0
 ```
 
 
-### MPLS / LDP (Enable per router)
+### MPLS / LDP (Enable per SP router)
 ```bash
-mpls ldp router-id Loopback0 force
+SP1-PE# mpls ldp router-id Loopback0 force
 ```
 ```bash
-interface GigabitEthernet0/0
- mpls ip
+SP1-PE# interface GigabitEthernet0/0
+         mpls ip
 ```
 
 ### VRF on PE (SP1-PE and SP3-PE)
 ```bash
-ip vrf CUSTOMER-1
- rd 100:1
- route-target export 1:100
- route-target import 1:100
+SP1-PE# ip vrf CUSTOMER-1
+         rd 100:1
+         route-target export 1:100
+         route-target import 1:100
 ```
 ```bash
-interface GigabitEthernet0/1
- ip vrf forwarding CUSTOMER-1
- ip address 10.0.100.1 255.255.255.252
- no shutdown
+SP1-PE# interface GigabitEthernet0/1
+         ip vrf forwarding CUSTOMER-1
+         ip address 10.0.100.1 255.255.255.252
+         no shutdown
 ```
 
 ### MP-BGP (iBGP between PEs using Loopbacks)
 ```bash
-router bgp 100
- neighbor 172.16.2.1 remote-as 100
- neighbor 172.16.2.1 update-source Loopback0
+SP1-PE# router bgp 100
+         neighbor 172.16.2.1 remote-as 100
+         neighbor 172.16.2.1 update-source Loopback0
 
- address-family vpnv4
-  neighbor 172.16.2.1 activate
-  neighbor 172.16.2.1 send-community both
- exit-address-family
+         address-family vpnv4
+          neighbor 172.16.2.1 activate
+          neighbor 172.16.2.1 send-community both
+         exit-address-family
 ```
 
 ### VRF <-> IGP/BGP Redistribution (PE)
 ```bash
-router ospf 10 vrf CUSTOMER-1
- network 10.0.0.0 0.0.255.255 area 0
- redistribute bgp 100 subnets
+SP1-PE# router ospf 10 vrf CUSTOMER-1
+         network 10.0.0.0 0.0.255.255 area 0
+         redistribute bgp 100 subnets
 ```
 ```bash
-router bgp 100
- address-family ipv4 vrf CUSTOMER-1
-  redistribute ospf 10 vrf CUSTOMER-1
- exit-address-family
+SP1-PE# router bgp 100
+         address-family ipv4 vrf CUSTOMER-1
+          redistribute ospf 10 vrf CUSTOMER-1
+         exit-address-family
 ```
 
 ### CE OSPF (HQ-CE / BRANCH-CE)
 ```bash
-router ospf 1
- log-adjacency-changes
- network 10.0.0.0 0.0.255.255 area 0
+HQ-CE# router ospf 1
+        log-adjacency-changes
+        network 10.0.0.0 0.0.255.255 area 0
 ```
 
 ---
 
 ## ✅ Verification Commands
 ```bash
-show mpls ldp neighbor
-show ip vrf detail
-show ip route vrf CUSTOMER-1
-show ip bgp vpnv4 all
+SP1-PE# show mpls ldp neighbor
+SP1-PE# show ip vrf detail
+SP1-PE# show ip route vrf CUSTOMER-1
+SP1-PE# show ip bgp vpnv4 all
 ```
 ---
 
