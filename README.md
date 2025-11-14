@@ -79,17 +79,17 @@ This lab shows how to configure an MPLS L3VPN with:
 
 ## 📁 Files & Repo Structure (suggested)
 
-.
+```
 ├── Topology.png
 ├── README.md
 ├── configs/
-│ ├── SP1-PE.cfg
-│ ├── SP2-P.cfg
-│ ├── SP3-PE.cfg
-│ ├── HQ-CE.cfg
-│ └── BRANCH-CE.cfg
-└── gns3-project/
-
+│ ├── SP1-PE.txt
+│ ├── SP2-P.txt
+│ ├── SP3-PE.txt
+│ ├── HQ-CE.txt
+│ └── BRANCH-CE.txt
+└── MPLS-L3VPN.gns3project
+```
 
 ---
 
